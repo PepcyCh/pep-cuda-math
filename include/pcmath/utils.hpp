@@ -158,6 +158,29 @@ CUDA_HOST_DEVICE inline Mat4 Perspective(float fov, float aspect, float n, float
     return res;
 }
 
+CUDA_HOST_DEVICE inline Mat4 PerspectiveInf(float fov, float aspect, float n, bool flip_y = false) {
+    const float t = 1.0f/ std::tan(fov * 0.5f);
+#ifdef PCMATH_GL_MATRIX
+    Mat4 res(
+        Vec4(t / aspect, 0.0f, 0.0f, 0.0f),
+        Vec4(0.0f, t, 0.0f, 0.0f),
+        Vec4(0.0f, 0.0f, -1.0f, -1.0f),
+        Vec4(0.0f, 0.0f, -2.0f * n, 0.0f)
+    );
+#else
+    Mat4 res(
+        Vec4(t / aspect, 0.0f, 0.0f, 0.0f),
+        Vec4(0.0f, t, 0.0f, 0.0f),
+        Vec4(0.0f, 0.0f, -1.0f, -1.0f),
+        Vec4(0.0f, 0.0f, -n, 0.0f)
+    );
+#endif
+    if (flip_y) {
+        res[1][1] = -res[1][1];
+    }
+    return res;
+}
+
 CUDA_HOST_DEVICE inline Mat4 PerspectiveReverseZ(float fov, float aspect, float n, float f, bool flip_y = false) {
     const float t = 1.0f / std::tan(fov * 0.5f);
     const float invz = 1.0f / (f - n);
@@ -166,6 +189,20 @@ CUDA_HOST_DEVICE inline Mat4 PerspectiveReverseZ(float fov, float aspect, float 
         Vec4(0.0f, t, 0.0f, 0.0f),
         Vec4(0.0f, 0.0f, n * invz, -1.0f),
         Vec4(0.0f, 0.0f, f * n * invz, 0.0f)
+    );
+    if (flip_y) {
+        res[1][1] = -res[1][1];
+    }
+    return res;
+}
+
+CUDA_HOST_DEVICE inline Mat4 PerspectiveInfReverseZ(float fov, float aspect, float n, bool flip_y = false) {
+    const float t = 1.0f / std::tan(fov * 0.5f);
+    Mat4 res(
+        Vec4(t / aspect, 0.0f, 0.0f, 0.0f),
+        Vec4(0.0f, t, 0.0f, 0.0f),
+        Vec4(0.0f, 0.0f, 0.0f, -1.0f),
+        Vec4(0.0f, 0.0f, n, 0.0f)
     );
     if (flip_y) {
         res[1][1] = -res[1][1];

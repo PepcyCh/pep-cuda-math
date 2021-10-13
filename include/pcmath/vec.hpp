@@ -241,6 +241,22 @@ public:
         return res;
     }
 
+    CUDA_HOST_DEVICE VecT<T, N> Min(const VecT<T, N> &rhs) const {
+        VecT<T, N> res;
+        for (size_t i = 0; i < N; i++) {
+            res.data_[i] = data_[i] < rhs.data_[i] ? data_[i] : rhs.data_[i];
+        }
+        return res;
+    }
+
+    CUDA_HOST_DEVICE VecT<T, N> Max(const VecT<T, N> &rhs) const {
+        VecT<T, N> res;
+        for (size_t i = 0; i < N; i++) {
+            res.data_[i] = data_[i] > rhs.data_[i] ? data_[i] : rhs.data_[i];
+        }
+        return res;
+    }
+
     template <typename S, size_t M>
     friend class VecT;
 
