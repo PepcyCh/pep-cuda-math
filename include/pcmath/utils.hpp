@@ -101,6 +101,27 @@ CUDA_HOST_DEVICE inline Mat4 Rotate(const Vec3 &axis, float angle) {
     );
 }
 
+CUDA_HOST_DEVICE inline Mat4 Rotate(const Vec4 &quaternion) {
+    const float x2 = 2.0f * quaternion.X();
+    const float y2 = 2.0f * quaternion.Y();
+    const float z2 = 2.0f * quaternion.Z();
+    const float xx = x2 * quaternion.X();
+    const float yy = y2 * quaternion.Y();
+    const float zz = z2 * quaternion.Z();
+    const float xy = x2 * quaternion.Y();
+    const float yz = y2 * quaternion.Z();
+    const float zx = z2 * quaternion.X();
+    const float xw = x2 * quaternion.W();
+    const float yw = y2 * quaternion.W();
+    const float zw = z2 * quaternion.W();
+    return Mat4(
+        Vec4(1.0f - yy - zz, xy + zw, zx - yw, 0.0f),
+        Vec4(xy - zw, 1.0f - zz - xx, yz + xw, 0.0f),
+        Vec4(zx + yw, yz - xw, 1.0f - xx - yy, 0.0f),
+        Vec4(0.0f, 0.0f, 0.0f, 1.0f)
+    );
+}
+
 CUDA_HOST_DEVICE inline Mat4 LookAt(const Vec3 &pos, const Vec3 &look_at, const Vec3 &up) {
     const Vec3 w = (pos - look_at).Normalize();
     const Vec3 u = up.Cross(w).Normalize();
